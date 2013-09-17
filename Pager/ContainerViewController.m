@@ -28,7 +28,6 @@ typedef enum {
     if (self) {
         self.index = 0;
         self.loopingEnabled = NO;
-        self.gestureMode = GestureModePan;
         self.contentArray = [NSMutableArray arrayWithCapacity:5];
         [self.contentArray addObject:@"0000000"];
         [self.contentArray addObject:@"1111111"];
@@ -53,17 +52,6 @@ typedef enum {
     pan.delegate = self;
     [self.view addGestureRecognizer:pan];
 
-    UISwipeGestureRecognizer * swipeLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeLeft:)];
-    swipeLeft.direction = UISwipeGestureRecognizerDirectionLeft;
-    swipeLeft.delegate = self;
-    [self.view addGestureRecognizer:swipeLeft];
-    
-    UISwipeGestureRecognizer * swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRight:)];
-    swipeRight.direction = UISwipeGestureRecognizerDirectionRight;
-    swipeRight.delegate = self;
-    [self.view addGestureRecognizer:swipeRight];
-
-    // Add initial contentViewController
     NSString * content = [self.contentArray objectAtIndex:self.index];
     ContentViewController * vc = [[ContentViewController alloc] initWithContent:content];
     vc.view.frame = self.view.bounds;
@@ -76,17 +64,7 @@ typedef enum {
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    BOOL shouldBegin = YES;
-    if (self.gestureMode == GestureModePan) {
-        if ([gestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
-            shouldBegin = NO;
-        }
-    } else if (self.gestureMode == GestureModeSwipe) {
-        if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-            shouldBegin = NO;
-        }
-    }
-    return shouldBegin;
+    return YES;
 }
 
 #pragma mark - Gestures
@@ -97,7 +75,9 @@ typedef enum {
     PanDirection direction = (translation.x > 0) ? PanDirectionBack : PanDirectionForward;
     
     if (recognizer.state == UIGestureRecognizerStateBegan) {
-        [self setupNextViewController:direction]; // self.nextViewController is destroyed in the transition methods
+        self.nextViewController = [self viewControllerForDirection:direction]; // self.nextViewController is destroyed in the transition methods
+        [self addChildViewController:self.nextViewController];
+        [self.view addSubview:self.nextViewController.view];
     }
     
     ContentViewController * current = [self currentViewController]; //TODO: should currentViewController be an @property?
@@ -114,6 +94,8 @@ typedef enum {
         }
     }
 }
+
+#pragma mark - Containment
 
 - (void)cancelPanInDirection:(PanDirection)direction fromViewController:(UIViewController *)old toViewController:(UIViewController *)new
 {
@@ -135,8 +117,7 @@ typedef enum {
         } completion:^(BOOL finished) {
             [new.view removeFromSuperview];
             [new removeFromParentViewController];
-            self.nextViewController = nil;
-            NSLog(@"contentViewControllers: %i", [self.childViewControllers count]);
+            weakSelf.nextViewController = nil;
         }];
     }
 }
@@ -166,49 +147,8 @@ typedef enum {
             [old.view removeFromSuperview];
             [old removeFromParentViewController];
             [new didMoveToParentViewController:self];
-            self.nextViewController = nil;
-            NSLog(@"contentViewControllers: %i", [self.childViewControllers count]);
+            weakSelf.nextViewController = nil;
         }];
-    }
-}
-
-- (void)setupNextViewController:(PanDirection)direction
-{
-    int index = 0;
-    CGRect frame = CGRectZero;
-    if (direction == PanDirectionForward) {
-        index = [self nextIndex];
-        frame = [self nextStartFrame];
-    } else {
-        index = [self previousIndex];
-        frame = [self previousStartFrame];
-    }
-    
-    self.nextViewController = [self newViewControllerForIndex:index];
-    self.nextViewController.view.frame = frame;
-    [self addChildViewController:self.nextViewController];
-    [self.view addSubview:self.nextViewController.view];
-}
-
-- (void)swipeLeft:(UISwipeGestureRecognizer *)gesture
-{
-    int index = [self nextIndex];
-    if (index != self.index) {
-        self.index = index;
-        ContentViewController * new = [self newViewControllerForIndex:self.index];
-        ContentViewController * current = [self currentViewController];
-        [self cycleInDirection:gesture.direction fromViewController:current toViewController:new];
-    }
-}
-
-- (void)swipeRight:(UISwipeGestureRecognizer *)gesture
-{
-    int index = [self previousIndex];
-    if (index != self.index) {
-        self.index = index;
-        ContentViewController * new = [self newViewControllerForIndex:self.index];
-        ContentViewController * current = [self currentViewController];
-        [self cycleInDirection:gesture.direction fromViewController:current toViewController:new];
     }
 }
 
@@ -234,9 +174,24 @@ typedef enum {
     return index;
 }
 
-#pragma mark - Containment
+- (ContentViewController *)viewControllerForDirection:(PanDirection)direction
+{
+    int index = 0;
+    CGRect frame = CGRectZero;
+    if (direction == PanDirectionForward) {
+        index = [self nextIndex];
+        frame = [self nextStartFrame];
+    } else {
+        index = [self previousIndex];
+        frame = [self previousStartFrame];
+    }
+    
+    ContentViewController * vc = [self viewControllerForIndex:index];
+    vc.view.frame = frame;
+    return vc;
+}
 
-- (ContentViewController *)newViewControllerForIndex:(int)index
+- (ContentViewController *)viewControllerForIndex:(int)index
 {
     NSString * content = [self.contentArray objectAtIndex:index];
     ContentViewController * new = [[ContentViewController alloc] initWithContent:content];
@@ -250,38 +205,6 @@ typedef enum {
         vc = [self.childViewControllers objectAtIndex:0];
     }
     return vc;
-}
-
-- (void)cycleInDirection:(UISwipeGestureRecognizerDirection)direction fromViewController:(UIViewController *)old toViewController:(UIViewController *)new
-{
-    if (old && new) {
-        
-        CGRect oldFrame = CGRectZero;
-        
-        if (direction == UISwipeGestureRecognizerDirectionLeft) {
-            new.view.frame = [self nextStartFrame];
-            oldFrame = [self previousEndFrame];
-        } else {
-            new.view.frame = [self previousStartFrame];
-            oldFrame = [self nextEndFrame];
-        }
-        
-        [old willMoveToParentViewController:nil];
-        [self addChildViewController:new];
-        
-        __weak ContainerViewController * weakSelf = self;
-        [self transitionFromViewController:old toViewController:new duration:0.25f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            
-            new.view.frame = weakSelf.view.bounds;
-            old.view.frame = oldFrame;
-            
-        } completion:^(BOOL finished) {
-            [old removeFromParentViewController];
-            [new didMoveToParentViewController:self];
-            
-            NSLog(@"contentViewControllers: %i", [self.childViewControllers count]);
-        }];
-    }
 }
 
 #pragma mark - Frames
