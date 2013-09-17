@@ -8,8 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ContainerViewController : UIViewController
 
-@property (nonatomic, assign) BOOL loopingEnabled; // NO by default
+typedef enum {
+    GestureModeSwipe,
+    GestureModePan
+} GestureMode;
+
+@interface ContainerViewController : UIViewController <UIGestureRecognizerDelegate>
+
+@property (nonatomic, assign) BOOL loopingEnabled;      // NO = default
+@property (nonatomic, assign) GestureMode gestureMode;  // GestureModePan = default
 
 @end
