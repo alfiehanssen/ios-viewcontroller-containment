@@ -11,5 +11,6 @@
 @interface ContainerViewController : UIViewController <UIGestureRecognizerDelegate>
 
 @property (nonatomic, assign) BOOL loopingEnabled; // NO = default
+@property (nonatomic, assign) BOOL parallaxEnabled; // YES = default
 
 @end

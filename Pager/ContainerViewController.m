@@ -9,6 +9,10 @@
 #import "ContainerViewController.h"
 #import "ContentViewController.h"
 
+#define PARALLAX_SCALAR 0.5f
+#define TRANSITION_DURATION 0.25f
+#define PAN_COMPLETION_THRESHOLD 0.5f
+
 typedef enum {
     PanDirectionBack,
     PanDirectionForward
@@ -28,6 +32,7 @@ typedef enum {
     if (self) {
         self.index = 0;
         self.loopingEnabled = NO;
+        self.parallaxEnabled = YES;
         self.contentArray = [NSMutableArray arrayWithCapacity:5];
         [self.contentArray addObject:@"0000000"];
         [self.contentArray addObject:@"1111111"];
@@ -81,13 +86,14 @@ typedef enum {
     }
     
     ContentViewController * current = [self currentViewController]; //TODO: should currentViewController be an @property?
-    current.view.frame = (CGRect){translation.x, 0, current.view.frame.size};
+    float adjustedTranslation = (self.parallaxEnabled) ? translation.x * PARALLAX_SCALAR : translation.x;
+    current.view.frame = (CGRect){adjustedTranslation, 0, current.view.frame.size};
 
     float originX = (direction == PanDirectionForward) ? self.view.frame.size.width : 0 - self.view.frame.size.width;
     self.nextViewController.view.frame = (CGRect){originX + translation.x, 0, self.nextViewController.view.frame.size};
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        if (ABS(translation.x) > self.view.frame.size.width * 0.5f) {
+        if (ABS(translation.x) > self.view.frame.size.width * PAN_COMPLETION_THRESHOLD) {
             [self finishPanInDirection:direction fromViewController:current toViewController:self.nextViewController];
         } else {
             [self cancelPanInDirection:direction fromViewController:current toViewController:self.nextViewController];
@@ -103,13 +109,13 @@ typedef enum {
         
         CGRect newFrame = CGRectZero;
         if (direction == PanDirectionForward) {
-            newFrame = [self nextEndFrame];
+            newFrame = [self nextFrame:NO];
         } else {
-            newFrame = [self previousEndFrame];
+            newFrame = [self previousFrame:NO];
         }
         
         __weak ContainerViewController * weakSelf = self;
-        [UIView animateWithDuration:0.3f delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+        [UIView animateWithDuration:TRANSITION_DURATION delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
             
             new.view.frame = newFrame;
             old.view.frame = weakSelf.view.bounds;
@@ -131,14 +137,14 @@ typedef enum {
         CGRect oldFrame = CGRectZero;
         if (direction == PanDirectionForward) {
             self.index = [self nextIndex];
-            oldFrame = [self previousEndFrame];
+            oldFrame = [self previousFrame:YES];
         } else {
             self.index = [self previousIndex];
-            oldFrame = [self nextEndFrame];
+            oldFrame = [self nextFrame:YES];
         }
         
         __weak ContainerViewController * weakSelf = self;
-        [UIView animateWithDuration:0.3f delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+        [UIView animateWithDuration:TRANSITION_DURATION delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
             
             old.view.frame = oldFrame;
             new.view.frame = weakSelf.view.bounds;
@@ -180,10 +186,10 @@ typedef enum {
     CGRect frame = CGRectZero;
     if (direction == PanDirectionForward) {
         index = [self nextIndex];
-        frame = [self nextStartFrame];
+        frame = [self nextFrame:NO];
     } else {
         index = [self previousIndex];
-        frame = [self previousStartFrame];
+        frame = [self previousFrame:NO];
     }
     
     ContentViewController * vc = [self viewControllerForIndex:index];
@@ -209,24 +215,26 @@ typedef enum {
 
 #pragma mark - Frames
 
-- (CGRect)nextStartFrame
+- (CGRect)nextFrame:(BOOL)obeyParallax
 {
-    return (CGRect){self.view.bounds.size.width, 0, self.view.bounds.size};
+    CGRect rect = CGRectZero;
+    if (self.parallaxEnabled && obeyParallax) {
+        rect = (CGRect){self.view.bounds.size.width * PARALLAX_SCALAR, 0, self.view.bounds.size};
+    } else {
+        rect = (CGRect){self.view.bounds.size.width, 0, self.view.bounds.size};
+    }
+    return rect;
 }
 
-- (CGRect)previousStartFrame
+- (CGRect)previousFrame:(BOOL)obeyParallax
 {
-    return (CGRect){0 - self.view.bounds.size.width, 0, self.view.bounds.size};
-}
-
-- (CGRect)nextEndFrame
-{
-    return (CGRect){self.view.bounds.size.width, 0, self.view.bounds.size};
-}
-
-- (CGRect)previousEndFrame
-{
-    return (CGRect){0 - self.view.bounds.size.width, 0, self.view.bounds.size};
+    CGRect rect = CGRectZero;
+    if (self.parallaxEnabled && obeyParallax) {
+        rect = (CGRect){0 - self.view.bounds.size.width * PARALLAX_SCALAR, 0, self.view.bounds.size};
+    } else {
+        rect = (CGRect){0 - self.view.bounds.size.width, 0, self.view.bounds.size};;
+    }
+    return rect;
 }
 
 @end
