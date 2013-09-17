@@ -12,6 +12,7 @@
 #define PARALLAX_SCALAR 0.5f
 #define TRANSITION_DURATION 0.25f
 #define PAN_COMPLETION_THRESHOLD 0.5f
+#define VELOCITY_THRESHOLD 300.0f
 
 typedef enum {
     PanDirectionBack,
@@ -108,7 +109,7 @@ typedef enum {
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         if (ABS(translation.x) > self.view.frame.size.width * PAN_COMPLETION_THRESHOLD) {
-            [self finishPanInDirection:direction fromViewController:current toViewController:self.nextViewController];
+            [self finishPanInDirection:direction withVelocity:[recognizer velocityInView:self.view] fromViewController:current toViewController:self.nextViewController];
         } else {
             [self cancelPanInDirection:direction fromViewController:current toViewController:self.nextViewController];
         }
@@ -142,7 +143,7 @@ typedef enum {
     }
 }
 
-- (void)finishPanInDirection:(PanDirection)direction fromViewController:(UIViewController *)old toViewController:(UIViewController *)new
+- (void)finishPanInDirection:(PanDirection)direction withVelocity:(CGPoint)velocity fromViewController:(UIViewController *)old toViewController:(UIViewController *)new
 {
     if (old && new) {
         
@@ -157,8 +158,13 @@ typedef enum {
             oldFrame = [self nextFrame:YES];
         }
         
+        float duration = TRANSITION_DURATION;
+        if (ABS(velocity.x) > VELOCITY_THRESHOLD) {
+            duration = TRANSITION_DURATION * (ABS(new.view.frame.origin.x) / new.view.frame.size.width);
+        }
+        
         __weak ContainerViewController * weakSelf = self;
-        [UIView animateWithDuration:TRANSITION_DURATION delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+        [UIView animateWithDuration:duration delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
             
             old.view.frame = oldFrame;
             new.view.frame = weakSelf.view.bounds;
