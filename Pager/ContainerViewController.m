@@ -56,6 +56,7 @@ typedef enum {
     
     UIPanGestureRecognizer * pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
     pan.delegate = self;
+    pan.maximumNumberOfTouches = 1;
     [self.view addGestureRecognizer:pan];
 
     NSString * content = [self.contentArray objectAtIndex:self.index];
