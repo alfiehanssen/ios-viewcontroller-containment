@@ -7,13 +7,19 @@
 //
 
 #import "AppDelegate.h"
+#import "ContainerViewController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
+
+    ContainerViewController * vc = [[ContainerViewController alloc] init];
+    vc.loopingEnabled = YES;
+    vc.view.frame = self.window.bounds;
+    [self.window setRootViewController:vc];
+    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
