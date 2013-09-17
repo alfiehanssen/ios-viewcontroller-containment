@@ -69,7 +69,21 @@ typedef enum {
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    return YES;
+    BOOL shouldBegin = YES;
+    
+    if (!self.loopingEnabled) {
+        if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+            CGPoint translation = [(UIPanGestureRecognizer *)gestureRecognizer translationInView:self.view];
+            PanDirection direction = (translation.x > 0) ? PanDirectionBack : PanDirectionForward;
+            if (direction == PanDirectionBack && self.index == 0) {
+                shouldBegin = NO;
+            } else if (direction == PanDirectionForward && self.index == [self.contentArray count] -1) {
+                shouldBegin = NO;
+            }
+        }
+    }
+    
+    return shouldBegin;
 }
 
 #pragma mark - Gestures
