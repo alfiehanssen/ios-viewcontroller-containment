@@ -12,7 +12,7 @@
 #define PARALLAX_SCALAR 0.5f
 #define TRANSITION_DURATION 0.25f
 #define PAN_COMPLETION_THRESHOLD 0.5f
-#define VELOCITY_THRESHOLD 300.0f
+#define VELOCITY_THRESHOLD 400.0f
 
 typedef enum {
     PanDirectionBack,
@@ -97,22 +97,11 @@ typedef enum {
 
 - (void)tap:(UITapGestureRecognizer *)recognizer
 {
-    int index = self.index;
     CGPoint location = [recognizer locationInView:self.view];
     if (location.x < self.view.frame.size.width / 2) {
-        index = [self previousIndex];
+        [self transitionToPrevious];
     } else {
-        index = [self nextIndex];
-    }
-    
-    if (self.index == index) {
-        return;
-    }
-    
-    if (ABS(self.index - index) == 1) {
-        [self transitionToIndex:index];
-    } else {
-        [self jumpToIndex:index];
+        [self transitionToNext];
     }
 }
 
@@ -145,7 +134,7 @@ typedef enum {
     }
 }
 
-#pragma mark - Containment
+#pragma mark - Transitions
 
 - (void)jumpToIndex:(int)index
 {
@@ -166,11 +155,23 @@ typedef enum {
     self.index = index;
 }
 
+- (void)transitionToPrevious
+{
+    int index = [self previousIndex];
+    [self transitionToIndex:index];
+}
+
+- (void)transitionToNext
+{
+    int index = [self nextIndex];
+    [self transitionToIndex:index];
+}
+
 - (void)transitionToIndex:(int)index
 {
     ContentViewController * new = [self viewControllerForIndex:index];
     
-    PanDirection direction = (self.index - index) > 0 ? PanDirectionBack : PanDirectionForward;
+    PanDirection direction = (index == [self previousIndex]) ? PanDirectionBack : PanDirectionForward;
     new.view.frame = (direction == PanDirectionBack) ? [self previousFrame:NO] : [self nextFrame:NO];
     
     [self addChildViewController:new];
