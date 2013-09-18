@@ -97,7 +97,13 @@ typedef enum {
 
 - (void)tap:(UITapGestureRecognizer *)recognizer
 {
-    int index = (self.index + 2 >= [self.contentArray count]) ? [self.contentArray count] - 1 : self.index + 2;
+    int index = self.index;
+    CGPoint location = [recognizer locationInView:self.view];
+    if (location.x < self.view.frame.size.width / 2) {
+        index = [self previousIndex];
+    } else {
+        index = [self nextIndex];
+    }
     
     if (self.index == index) {
         return;
