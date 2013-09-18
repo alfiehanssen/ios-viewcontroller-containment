@@ -22,6 +22,7 @@ typedef enum {
 @interface ContainerViewController ()
 @property (nonatomic, assign) int index;
 @property (nonatomic, strong) NSMutableArray * contentArray;
+@property (nonatomic, strong) ContentViewController * currentViewController;
 @property (nonatomic, strong) ContentViewController * nextViewController;
 @end
 
@@ -59,12 +60,14 @@ typedef enum {
     pan.maximumNumberOfTouches = 1;
     [self.view addGestureRecognizer:pan];
 
-    NSString * content = [self.contentArray objectAtIndex:self.index];
-    ContentViewController * vc = [[ContentViewController alloc] initWithContent:content];
-    vc.view.frame = self.view.bounds;
-    [self addChildViewController:vc];
-    [self.view addSubview:vc.view];
-    [vc didMoveToParentViewController:self];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
+    [self.view addGestureRecognizer:tap];
+    
+    self.currentViewController = [self viewControllerForIndex:self.index];
+    self.currentViewController.view.frame = self.view.bounds;
+    [self addChildViewController:self.currentViewController];
+    [self.view addSubview:self.currentViewController.view];
+    [self.currentViewController didMoveToParentViewController:self];
 }
 
 #pragma mark - UIGestureRecognizer Delegate
@@ -89,6 +92,12 @@ typedef enum {
 }
 
 #pragma mark - Gestures
+
+- (void)tap:(UITapGestureRecognizer *)recognizer
+{
+    int index = (self.index + 2 >= [self.contentArray count]) ? [self.contentArray count] - 1 : self.index + 2;
+    [self transitionToIndex:index];
+}
 
 - (void)pan:(UIPanGestureRecognizer *)recognizer
 {
@@ -119,29 +128,23 @@ typedef enum {
 
 #pragma mark - Containment
 
-- (void)cancelPanInDirection:(PanDirection)direction fromViewController:(UIViewController *)old toViewController:(UIViewController *)new
+- (void)transitionToIndex:(int)index
 {
-    if (old && new) {
-        
-        CGRect newFrame = CGRectZero;
-        if (direction == PanDirectionForward) {
-            newFrame = [self nextFrame:NO];
-        } else {
-            newFrame = [self previousFrame:NO];
-        }
-        
-        __weak ContainerViewController * weakSelf = self;
-        [UIView animateWithDuration:TRANSITION_DURATION delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            
-            new.view.frame = newFrame;
-            old.view.frame = weakSelf.view.bounds;
-            
-        } completion:^(BOOL finished) {
-            [new.view removeFromSuperview];
-            [new removeFromParentViewController];
-            weakSelf.nextViewController = nil;
-        }];
-    }
+    ContentViewController * new = [self viewControllerForIndex:index];
+    new.view.frame = self.view.bounds;
+    
+    [self addChildViewController:new];
+    [self.currentViewController willMoveToParentViewController:nil];
+    
+    [self.view addSubview:new.view];
+    [self.currentViewController.view removeFromSuperview];
+    
+    [new didMoveToParentViewController:self];
+    [self.currentViewController removeFromParentViewController];
+    
+    self.currentViewController = new;
+    
+    self.index = index;
 }
 
 - (void)finishPanInDirection:(PanDirection)direction withVelocity:(CGPoint)velocity fromViewController:(UIViewController *)old toViewController:(UIViewController *)new
@@ -173,32 +176,36 @@ typedef enum {
         } completion:^(BOOL finished) {
             [old.view removeFromSuperview];
             [old removeFromParentViewController];
-            [new didMoveToParentViewController:self];
+            [new didMoveToParentViewController:weakSelf];
+            weakSelf.currentViewController = weakSelf.nextViewController;
             weakSelf.nextViewController = nil;
         }];
     }
 }
 
-- (int)nextIndex
+- (void)cancelPanInDirection:(PanDirection)direction fromViewController:(UIViewController *)old toViewController:(UIViewController *)new
 {
-    int index = 0;
-    if (self.loopingEnabled) {
-        index = (self.index + 1 >= [self.contentArray count]) ? 0 : self.index + 1;
-    } else {
-        index = MIN(self.index + 1, [self.contentArray count] - 1);
+    if (old && new) {
+        
+        CGRect newFrame = CGRectZero;
+        if (direction == PanDirectionForward) {
+            newFrame = [self nextFrame:NO];
+        } else {
+            newFrame = [self previousFrame:NO];
+        }
+        
+        __weak ContainerViewController * weakSelf = self;
+        [UIView animateWithDuration:TRANSITION_DURATION delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+            
+            new.view.frame = newFrame;
+            old.view.frame = weakSelf.view.bounds;
+            
+        } completion:^(BOOL finished) {
+            [new.view removeFromSuperview];
+            [new removeFromParentViewController];
+            weakSelf.nextViewController = nil;
+        }];
     }
-    return index;
-}
-
-- (int)previousIndex
-{
-    int index = 0;
-    if (self.loopingEnabled) {
-        index = (self.index - 1 < 0) ? [self.contentArray count] - 1 : self.index - 1;
-    } else {
-        index = MAX(0, self.index - 1);
-    }
-    return index;
 }
 
 - (ContentViewController *)viewControllerForDirection:(PanDirection)direction
@@ -225,13 +232,37 @@ typedef enum {
     return new;
 }
 
-- (ContentViewController *)currentViewController
+//- (ContentViewController *)currentViewController
+//{
+//    ContentViewController * vc = nil;
+//    if ([self.childViewControllers count]) {
+//        vc = [self.childViewControllers objectAtIndex:0];
+//    }
+//    return vc;
+//}
+
+#pragma mark - Indexing
+
+- (int)nextIndex
 {
-    ContentViewController * vc = nil;
-    if ([self.childViewControllers count]) {
-        vc = [self.childViewControllers objectAtIndex:0];
+    int index = 0;
+    if (self.loopingEnabled) {
+        index = (self.index + 1 >= [self.contentArray count]) ? 0 : self.index + 1;
+    } else {
+        index = MIN(self.index + 1, [self.contentArray count] - 1);
     }
-    return vc;
+    return index;
+}
+
+- (int)previousIndex
+{
+    int index = 0;
+    if (self.loopingEnabled) {
+        index = (self.index - 1 < 0) ? [self.contentArray count] - 1 : self.index - 1;
+    } else {
+        index = MAX(0, self.index - 1);
+    }
+    return index;
 }
 
 #pragma mark - Frames
