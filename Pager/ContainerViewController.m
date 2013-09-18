@@ -116,7 +116,9 @@ typedef enum {
     PanDirection direction = (translation.x > 0) ? PanDirectionBack : PanDirectionForward;
     
     if (recognizer.state == UIGestureRecognizerStateBegan) {
-        self.nextViewController = [self viewControllerForDirection:direction]; // self.nextViewController is destroyed in the transition methods
+        int index = [self indexForDirection:direction];
+        self.nextViewController = [self viewControllerForIndex:index]; // self.nextViewController is destroyed in the transition methods
+        self.nextViewController.view.frame = [self frameForDirection:direction obeyParallax:NO];
         [self addChildViewController:self.nextViewController];
         [self.view addSubview:self.nextViewController.view];
     }
@@ -223,15 +225,6 @@ typedef enum {
         [new removeFromParentViewController];
         weakSelf.nextViewController = nil;
     }];
-}
-
-- (ContentViewController *)viewControllerForDirection:(PanDirection)direction
-{
-    int index = [self indexForDirection:direction];
-    CGRect frame = [self frameForDirection:direction obeyParallax:NO];
-    ContentViewController * vc = [self viewControllerForIndex:index];
-    vc.view.frame = frame;
-    return vc;
 }
 
 - (ContentViewController *)viewControllerForIndex:(int)index
