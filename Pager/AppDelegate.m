@@ -15,7 +15,7 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
-    ContainerViewController * vc = [[ContainerViewController alloc] init];
+    ContainerViewController * vc = [[ContainerViewController alloc] initWithNibName:@"ContainerViewController" bundle:nil];
     vc.loopingEnabled = YES;
     vc.parallaxEnabled = YES;
     vc.view.frame = self.window.bounds;

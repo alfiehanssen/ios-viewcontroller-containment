@@ -10,6 +10,8 @@
 
 @interface ContentViewController : UIViewController
 
-- (id)initWithContent:(NSString *)content;
+@property (nonatomic, strong) NSString * content;
+
+//- (id)initWithContent:(NSString *)content;
 
 @end

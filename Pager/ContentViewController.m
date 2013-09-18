@@ -11,19 +11,28 @@
 #define ARC4RANDOM_MAX 0x100000000
 
 @interface ContentViewController ()
-@property (nonatomic, strong) NSString * content;
+@property (nonatomic, strong) IBOutlet UILabel * label;
 @end
 
 @implementation ContentViewController
 
-- (id)initWithContent:(NSString *)content
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super init];
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.content = content;
+        self.content = @"Default Content";
     }
     return self;
 }
+
+//- (id)initWithContent:(NSString *)content
+//{
+//    self = [super init];
+//    if (self) {
+//        self.content = content;
+//    }
+//    return self;
+//}
 
 #pragma mark - View Lifecycle
 
@@ -40,19 +49,11 @@
     float r = ((float)arc4random() / ARC4RANDOM_MAX);
     float g = ((float)arc4random() / ARC4RANDOM_MAX);
     float b = ((float)arc4random() / ARC4RANDOM_MAX);
-
     self.view.backgroundColor = [UIColor colorWithRed:r green:g blue:b alpha:1.0];
-    self.view.alpha = 0.75f;
 
-    UILabel * label = [[UILabel alloc] initWithFrame:self.view.bounds];
     int fontSize = arc4random() % 40 + 30;
-    label.font = [UIFont boldSystemFontOfSize:fontSize];
-    label.text = self.content;
-    NSDictionary * attributes = @{NSFontAttributeName:label.font};
-    CGSize size = [label.text sizeWithAttributes:attributes];
-    label.frame = (CGRect){0, 0, size};
-    label.center = self.view.center;
-    [self.view addSubview:label];
+    self.label.font = [UIFont boldSystemFontOfSize:fontSize];
+    self.label.text = self.content;
 }
 
 - (void)viewWillAppear:(BOOL)animated

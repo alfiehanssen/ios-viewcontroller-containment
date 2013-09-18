@@ -21,6 +21,8 @@
 		915D9B8E17E88E94009B231B /* PagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 915D9B8D17E88E94009B231B /* PagerTests.m */; };
 		915D9B9917E88ED3009B231B /* ContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 915D9B9817E88ED3009B231B /* ContainerViewController.m */; };
 		915D9B9C17E88EE1009B231B /* ContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 915D9B9B17E88EE1009B231B /* ContentViewController.m */; };
+		919E2E7817EA5CF300C4D097 /* ContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 919E2E7717EA5CF300C4D097 /* ContainerViewController.xib */; };
+		919E2E7A17EA5DA900C4D097 /* ContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 919E2E7917EA5DA900C4D097 /* ContentViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,8 @@
 		915D9B9817E88ED3009B231B /* ContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContainerViewController.m; sourceTree = "<group>"; };
 		915D9B9A17E88EE1009B231B /* ContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentViewController.h; sourceTree = "<group>"; };
 		915D9B9B17E88EE1009B231B /* ContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentViewController.m; sourceTree = "<group>"; };
+		919E2E7717EA5CF300C4D097 /* ContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContainerViewController.xib; sourceTree = "<group>"; };
+		919E2E7917EA5DA900C4D097 /* ContentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContentViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,8 +121,10 @@
 				915D9B7817E88E93009B231B /* AppDelegate.m */,
 				915D9B9717E88ED3009B231B /* ContainerViewController.h */,
 				915D9B9817E88ED3009B231B /* ContainerViewController.m */,
+				919E2E7717EA5CF300C4D097 /* ContainerViewController.xib */,
 				915D9B9A17E88EE1009B231B /* ContentViewController.h */,
 				915D9B9B17E88EE1009B231B /* ContentViewController.m */,
+				919E2E7917EA5DA900C4D097 /* ContentViewController.xib */,
 				915D9B7A17E88E93009B231B /* Images.xcassets */,
 				915D9B6F17E88E93009B231B /* Supporting Files */,
 			);
@@ -229,7 +235,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				919E2E7A17EA5DA900C4D097 /* ContentViewController.xib in Resources */,
 				915D9B7317E88E93009B231B /* InfoPlist.strings in Resources */,
+				919E2E7817EA5CF300C4D097 /* ContainerViewController.xib in Resources */,
 				915D9B7B17E88E93009B231B /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -374,7 +382,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Pager/Pager-Prefix.pch";
 				INFOPLIST_FILE = "Pager/Pager-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -387,7 +397,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Pager/Pager-Prefix.pch";
 				INFOPLIST_FILE = "Pager/Pager-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -453,6 +465,7 @@
 				915D9B9317E88E94009B231B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		915D9B9417E88E94009B231B /* Build configuration list for PBXNativeTarget "PagerTests" */ = {
 			isa = XCConfigurationList;
@@ -461,6 +474,7 @@
 				915D9B9617E88E94009B231B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
