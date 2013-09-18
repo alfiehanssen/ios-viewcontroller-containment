@@ -138,6 +138,10 @@ typedef enum {
 
 - (void)jumpToIndex:(int)index
 {
+    if (index == self.index) {
+        return;
+    }
+
     ContentViewController * new = [self viewControllerForIndex:index];
     new.view.frame = self.view.bounds;
     
@@ -169,6 +173,10 @@ typedef enum {
 
 - (void)transitionToIndex:(int)index
 {
+    if (index == self.index) {
+        return;
+    }
+    
     ContentViewController * new = [self viewControllerForIndex:index];
     
     PanDirection direction = (index == [self previousIndex]) ? PanDirectionBack : PanDirectionForward;
