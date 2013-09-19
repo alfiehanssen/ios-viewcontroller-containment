@@ -138,6 +138,8 @@ typedef enum {
             self.currentViewController.view.frame = (CGRect){0.0f, 0.0f, self.currentViewController.view.bounds.size};
             if (recognizer.state == UIGestureRecognizerStateEnded) {
                 self.panDidChangeDirection = NO;
+                [self.nextViewController.view removeFromSuperview];
+                [self.nextViewController removeFromParentViewController];
                 self.nextViewController = nil;
                 self.panDirection = PanDirectionNone;
             }
@@ -146,6 +148,8 @@ typedef enum {
             self.currentViewController.view.frame = (CGRect){0.0f, 0.0f, self.currentViewController.view.bounds.size};
             if (recognizer.state == UIGestureRecognizerStateEnded) {
                 self.panDidChangeDirection = NO;
+                [self.nextViewController.view removeFromSuperview];
+                [self.nextViewController removeFromParentViewController];
                 self.nextViewController = nil;
                 self.panDirection = PanDirectionNone;
             }
