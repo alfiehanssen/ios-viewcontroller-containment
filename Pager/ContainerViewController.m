@@ -28,6 +28,7 @@ typedef enum {
 // Used only to track state during pan gestures, reset/nil'd at the end of each gesture
 @property (nonatomic, strong) ContentViewController * nextViewController;
 @property (nonatomic, assign) PanDirection panDirection;
+@property (nonatomic, assign) BOOL panDidChangeDirection;
 @end
 
 @implementation ContainerViewController
@@ -45,7 +46,9 @@ typedef enum {
         [self.contentArray addObject:@"2222222"];
         [self.contentArray addObject:@"3333333"];
         [self.contentArray addObject:@"4444444"];
+        
         self.panDirection = PanDirectionNone;
+        self.panDidChangeDirection = NO;
     }
     return self;
 }
@@ -110,6 +113,7 @@ typedef enum {
     }
 }
 
+// TODO: make this a subclass of UIGestureRecognizer
 - (void)pan:(UIPanGestureRecognizer *)recognizer
 {
     CGPoint translation = [recognizer translationInView:self.view];
@@ -122,6 +126,31 @@ typedef enum {
         self.nextViewController.view.frame = [self frameForDirection:self.panDirection obeyParallax:NO];
         [self addChildViewController:self.nextViewController];
         [self.view addSubview:self.nextViewController.view];
+    }
+    
+    PanDirection currentDirection = (velocity.x > 0) ? PanDirectionBack : PanDirectionForward;
+    if (self.panDirection != currentDirection) {
+        self.panDidChangeDirection = YES;
+    }
+    
+    if (self.panDidChangeDirection) {
+        if (self.panDirection == PanDirectionBack && self.currentViewController.view.frame.origin.x <= 0.0f) {
+            self.currentViewController.view.frame = (CGRect){0.0f, 0.0f, self.currentViewController.view.bounds.size};
+            if (recognizer.state == UIGestureRecognizerStateEnded) {
+                self.panDidChangeDirection = NO;
+                self.nextViewController = nil;
+                self.panDirection = PanDirectionNone;
+            }
+            return;
+        } else if (self.panDirection == PanDirectionForward && self.currentViewController.view.frame.origin.x >= 0.0f) {
+            self.currentViewController.view.frame = (CGRect){0.0f, 0.0f, self.currentViewController.view.bounds.size};
+            if (recognizer.state == UIGestureRecognizerStateEnded) {
+                self.panDidChangeDirection = NO;
+                self.nextViewController = nil;
+                self.panDirection = PanDirectionNone;
+            }
+            return;
+        }
     }
     
     float adjustedTranslation = (self.parallaxEnabled) ? translation.x * PARALLAX_SCALAR : translation.x;
