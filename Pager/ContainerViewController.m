@@ -8,17 +8,12 @@
 
 #import "ContainerViewController.h"
 #import "ContentViewController.h"
+#import "PanGestureRecognizer.h"
 
 #define PARALLAX_SCALAR 0.5f
 #define TRANSITION_DURATION 0.25f
 #define PAN_COMPLETION_THRESHOLD 0.5f
 #define VELOCITY_THRESHOLD 400.0f
-
-typedef enum {
-    PanDirectionNone,
-    PanDirectionBack,
-    PanDirectionForward
-} PanDirection;
 
 @interface ContainerViewController ()
 @property (nonatomic, assign) int index;
@@ -27,8 +22,6 @@ typedef enum {
 
 // Used only to track state during pan gestures, reset/nil'd at the end of each gesture
 @property (nonatomic, strong) ContentViewController * nextViewController;
-@property (nonatomic, assign) PanDirection panDirection;
-@property (nonatomic, assign) BOOL panDidChangeDirection;
 @end
 
 @implementation ContainerViewController
@@ -46,9 +39,6 @@ typedef enum {
         [self.contentArray addObject:@"2222222"];
         [self.contentArray addObject:@"3333333"];
         [self.contentArray addObject:@"4444444"];
-        
-        self.panDirection = PanDirectionNone;
-        self.panDidChangeDirection = NO;
     }
     return self;
 }
@@ -65,7 +55,7 @@ typedef enum {
 {
     [super viewDidLoad];
     
-    UIPanGestureRecognizer * pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
+    PanGestureRecognizer * pan = [[PanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
     pan.delegate = self;
     pan.maximumNumberOfTouches = 1;
     [self.view addGestureRecognizer:pan];
@@ -87,9 +77,8 @@ typedef enum {
     BOOL shouldBegin = YES;
     
     if (!self.loopingEnabled) {
-        if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-            CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.view];
-            PanDirection direction = (velocity.x > 0) ? PanDirectionBack : PanDirectionForward;
+        if ([gestureRecognizer isKindOfClass:[PanGestureRecognizer class]]) {
+            PanDirection direction = ((PanGestureRecognizer *)gestureRecognizer).panDirection;
             if (direction == PanDirectionBack && self.index == 0) {
                 shouldBegin = NO;
             } else if (direction == PanDirectionForward && self.index == [self.contentArray count] - 1) {
@@ -113,61 +102,42 @@ typedef enum {
     }
 }
 
-// TODO: make this a subclass of UIGestureRecognizer
-- (void)pan:(UIPanGestureRecognizer *)recognizer
+- (void)pan:(PanGestureRecognizer *)recognizer
 {
-    CGPoint translation = [recognizer translationInView:self.view];
-    CGPoint velocity = [recognizer velocityInView:self.view];
-    
     if (recognizer.state == UIGestureRecognizerStateBegan) {
-        self.panDirection = (velocity.x > 0) ? PanDirectionBack : PanDirectionForward;
-        int index = [self indexForDirection:self.panDirection];
+        int index = [self indexForDirection:recognizer.panDirection];
         self.nextViewController = [self viewControllerForIndex:index]; // self.nextViewController is destroyed in the transition methods
-        self.nextViewController.view.frame = [self frameForDirection:self.panDirection obeyParallax:NO];
+        self.nextViewController.view.frame = [self frameForDirection:recognizer.panDirection obeyParallax:NO];
         [self addChildViewController:self.nextViewController];
         [self.view addSubview:self.nextViewController.view];
     }
     
-    PanDirection currentDirection = (velocity.x > 0) ? PanDirectionBack : PanDirectionForward;
-    if (self.panDirection != currentDirection) {
-        self.panDidChangeDirection = YES;
-    }
-    
-    if (self.panDidChangeDirection) {
-        if (self.panDirection == PanDirectionBack && self.currentViewController.view.frame.origin.x <= 0.0f) {
+    if (recognizer.panDidChangeDirection) {
+        if ((recognizer.panDirection == PanDirectionBack && self.currentViewController.view.frame.origin.x <= 0.0f) || (recognizer.panDirection == PanDirectionForward && self.currentViewController.view.frame.origin.x >= 0.0f)) {
             self.currentViewController.view.frame = (CGRect){0.0f, 0.0f, self.currentViewController.view.bounds.size};
             if (recognizer.state == UIGestureRecognizerStateEnded) {
-                self.panDidChangeDirection = NO;
                 [self.nextViewController.view removeFromSuperview];
                 [self.nextViewController removeFromParentViewController];
                 self.nextViewController = nil;
-                self.panDirection = PanDirectionNone;
-            }
-            return;
-        } else if (self.panDirection == PanDirectionForward && self.currentViewController.view.frame.origin.x >= 0.0f) {
-            self.currentViewController.view.frame = (CGRect){0.0f, 0.0f, self.currentViewController.view.bounds.size};
-            if (recognizer.state == UIGestureRecognizerStateEnded) {
-                self.panDidChangeDirection = NO;
-                [self.nextViewController.view removeFromSuperview];
-                [self.nextViewController removeFromParentViewController];
-                self.nextViewController = nil;
-                self.panDirection = PanDirectionNone;
             }
             return;
         }
     }
     
+    CGPoint translation = [recognizer translationInView:self.view];
+    
     float adjustedTranslation = (self.parallaxEnabled) ? translation.x * PARALLAX_SCALAR : translation.x;
     self.currentViewController.view.frame = (CGRect){adjustedTranslation, 0, self.currentViewController.view.bounds.size};
 
-    float originX = (self.panDirection == PanDirectionForward) ? self.view.bounds.size.width : 0 - self.view.bounds.size.width;
+    float originX = (recognizer.panDirection == PanDirectionForward) ? self.view.bounds.size.width : 0 - self.view.bounds.size.width;
     self.nextViewController.view.frame = (CGRect){originX + translation.x, 0, self.nextViewController.view.bounds.size};
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         if (ABS(translation.x) > self.view.bounds.size.width * PAN_COMPLETION_THRESHOLD) {
-            [self finishPanWithVelocity:velocity toViewController:self.nextViewController];
+            CGPoint velocity = [recognizer velocityInView:self.view];
+            [self finishPanInDirection:recognizer.panDirection withVelocity:velocity toViewController:self.nextViewController];
         } else {
-            [self cancelPanToViewController:self.nextViewController];
+            [self cancelPanInDirection:recognizer.panDirection toViewController:self.nextViewController];
         }
     }
 }
@@ -239,13 +209,13 @@ typedef enum {
     }];
 }
 
-- (void)finishPanWithVelocity:(CGPoint)velocity toViewController:(UIViewController *)new
+- (void)finishPanInDirection:(PanDirection)direction withVelocity:(CGPoint)velocity toViewController:(UIViewController *)new
 {
     [self.currentViewController willMoveToParentViewController:nil];
     
-    PanDirection oppositeDirection = self.panDirection == PanDirectionBack ? PanDirectionForward : PanDirectionBack;
+    PanDirection oppositeDirection = direction == PanDirectionBack ? PanDirectionForward : PanDirectionBack;
     CGRect oldFrame = [self frameForDirection:oppositeDirection obeyParallax:YES];
-    self.index = [self indexForDirection:self.panDirection];
+    self.index = [self indexForDirection:direction];
     
     float duration = TRANSITION_DURATION;
     if (ABS(velocity.x) > VELOCITY_THRESHOLD) {
@@ -263,22 +233,20 @@ typedef enum {
         [new didMoveToParentViewController:weakSelf];
         weakSelf.currentViewController = weakSelf.nextViewController;
         weakSelf.nextViewController = nil;
-        weakSelf.panDirection = PanDirectionNone;
     }];
 }
 
-- (void)cancelPanToViewController:(UIViewController *)new
+- (void)cancelPanInDirection:(PanDirection)direction toViewController:(UIViewController *)new
 {
     __weak ContainerViewController * weakSelf = self;
     [UIView animateWithDuration:TRANSITION_DURATION delay:0.0f options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-        new.view.frame = [weakSelf frameForDirection:self.panDirection obeyParallax:NO];;
+        new.view.frame = [weakSelf frameForDirection:direction obeyParallax:NO];;
         weakSelf.currentViewController.view.frame = weakSelf.view.bounds;
         
     } completion:^(BOOL finished) {
         [new.view removeFromSuperview];
         [new removeFromParentViewController];
         weakSelf.nextViewController = nil;
-        weakSelf.panDirection = PanDirectionNone;
     }];
 }
 
