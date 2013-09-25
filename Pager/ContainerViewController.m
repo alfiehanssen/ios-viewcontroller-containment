@@ -11,7 +11,7 @@
 #import "PanGestureRecognizer.h"
 
 #define PARALLAX_SCALAR 0.5f
-#define TRANSITION_DURATION 0.25f
+#define TRANSITION_DURATION 0.15f
 #define PAN_COMPLETION_THRESHOLD 0.5f
 #define VELOCITY_THRESHOLD 400.0f
 
