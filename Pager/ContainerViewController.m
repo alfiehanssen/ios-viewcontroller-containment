@@ -133,8 +133,9 @@
     self.nextViewController.view.frame = (CGRect){originX + translation.x, 0, self.nextViewController.view.bounds.size};
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        if (ABS(translation.x) > self.view.bounds.size.width * PAN_COMPLETION_THRESHOLD) {
-            CGPoint velocity = [recognizer velocityInView:self.view];
+        CGPoint velocity = [recognizer velocityInView:self.view];
+        NSLog(@"velocity: %f", velocity.x);
+        if (ABS(translation.x) > self.view.bounds.size.width * PAN_COMPLETION_THRESHOLD || ABS(velocity.x) > 500.0f) {
             [self finishPanInDirection:recognizer.panDirection withVelocity:velocity toViewController:self.nextViewController];
         } else {
             [self cancelPanInDirection:recognizer.panDirection toViewController:self.nextViewController];
