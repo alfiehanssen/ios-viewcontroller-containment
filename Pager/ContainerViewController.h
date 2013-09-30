@@ -31,7 +31,7 @@
 @end
 
 
-@interface ContainerViewController : UIViewController <UIGestureRecognizerDelegate>
+@interface ContainerViewController : UIViewController
 
 @property (nonatomic, weak) id<ContainerViewControllerDatasource> datasource;
 @property (nonatomic, weak) id<ContainerViewControllerDelegate> delegate;

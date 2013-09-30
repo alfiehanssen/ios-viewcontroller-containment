@@ -7,8 +7,7 @@
 //
 
 #import "ContentViewController.h"
-
-#define ARC4RANDOM_MAX 0x100000000
+#import "UIColor+Random.h"
 
 @interface ContentViewController ()
 @property (nonatomic, strong) IBOutlet UILabel * label;
@@ -42,10 +41,7 @@
 {
     [super viewDidLoad];
 
-    float r = ((float)arc4random() / ARC4RANDOM_MAX);
-    float g = ((float)arc4random() / ARC4RANDOM_MAX);
-    float b = ((float)arc4random() / ARC4RANDOM_MAX);
-    self.view.backgroundColor = [UIColor colorWithRed:r green:g blue:b alpha:1.0];
+    self.view.backgroundColor = [UIColor randomColor];
 
     int fontSize = arc4random() % 40 + 30;
     self.label.font = [UIFont boldSystemFontOfSize:fontSize];

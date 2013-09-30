@@ -15,7 +15,7 @@
 #define PAN_COMPLETION_THRESHOLD 0.5f
 #define VELOCITY_THRESHOLD 500.0f
 
-@interface ContainerViewController ()
+@interface ContainerViewController () <UIGestureRecognizerDelegate, UICollisionBehaviorDelegate, UIDynamicAnimatorDelegate>
 @property (nonatomic, strong) NSMutableArray * viewControllers;
 @end
 
@@ -68,24 +68,6 @@
     [vc didMoveToParentViewController:self];
     self.currentViewController = vc;
     [self.viewControllers addObject:self.currentViewController];
-}
-
-#pragma mark - UIGestureRecognizer Delegate
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-    BOOL shouldBegin = YES;
-    
-    //    if ([gestureRecognizer isKindOfClass:[PanGestureRecognizer class]]) {
-    //        PanDirection direction = ((PanGestureRecognizer *)gestureRecognizer).panDirection;
-    //        if (direction == PanDirectionBack && self.currentViewController.index == 0) {
-    //            shouldBegin = NO;
-    //        } else if (direction == PanDirectionForward && self.currentViewController.index == [self.contentArray count] - 1) {
-    //            shouldBegin = NO;
-    //        }
-    //    }
-    
-    return shouldBegin;
 }
 
 #pragma mark - Jump Navigation
@@ -348,6 +330,48 @@
         rect = (CGRect){0 - self.view.bounds.size.width, 0, self.view.bounds.size};;
     }
     return rect;
+}
+
+#pragma mark - UIGestureRecognizer Delegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    BOOL shouldBegin = YES;
+    
+    //    if ([gestureRecognizer isKindOfClass:[PanGestureRecognizer class]]) {
+    //        PanDirection direction = ((PanGestureRecognizer *)gestureRecognizer).panDirection;
+    //        if (direction == PanDirectionBack && self.currentViewController.index == 0) {
+    //            shouldBegin = NO;
+    //        } else if (direction == PanDirectionForward && self.currentViewController.index == [self.contentArray count] - 1) {
+    //            shouldBegin = NO;
+    //        }
+    //    }
+    
+    return shouldBegin;
+}
+
+#pragma mark - UICollisionBehavior Delegate
+
+- (void)collisionBehavior:(UICollisionBehavior *)behavior beganContactForItem:(id<UIDynamicItem>)item withBoundaryIdentifier:(id<NSCopying>)identifier atPoint:(CGPoint)p
+{
+    //    NSLog(@"collisionBegan: %@", identifier);
+}
+
+- (void)collisionBehavior:(UICollisionBehavior *)behavior endedContactForItem:(id<UIDynamicItem>)item withBoundaryIdentifier:(id<NSCopying>)identifier
+{
+    //    NSLog(@"collisionEnded: %@", identifier);
+}
+
+#pragma mark - UIDynamicAnimator Delegate
+
+- (void)dynamicAnimatorDidPause:(UIDynamicAnimator *)animator
+{
+    //    NSLog(@"pause");
+}
+
+- (void)dynamicAnimatorWillResume:(UIDynamicAnimator *)animator
+{
+    //    NSLog(@"resume");
 }
 
 @end
