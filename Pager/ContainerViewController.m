@@ -9,14 +9,18 @@
 #import "ContainerViewController.h"
 #import "ContentViewController.h"
 #import "PanGestureRecognizer.h"
+#import "ExtrasView.h"
 
 #define PARALLAX_SCALAR 0.5f
 #define TRANSITION_DURATION 0.2f
 #define PAN_COMPLETION_THRESHOLD 0.5f
 #define VELOCITY_THRESHOLD 500.0f
 
+#define EXTRA_CONTAINER_PADDING 40.0f
+
 @interface ContainerViewController () <UIGestureRecognizerDelegate, UICollisionBehaviorDelegate, UIDynamicAnimatorDelegate>
 @property (nonatomic, strong) NSMutableArray * viewControllers;
+@property (nonatomic, strong) UIView * extrasView;
 @end
 
 @implementation ContainerViewController
@@ -48,6 +52,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.extrasView = [[NSBundle mainBundle] loadNibNamed:@"ExtrasView" owner:self options:nil][0];
+    self.extrasView.frame = [ExtrasView frameWhenHidden];
+    [self.view insertSubview:self.extrasView atIndex:0];
     
     PanGestureRecognizer * pan = [[PanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
     pan.delegate = self;

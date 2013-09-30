@@ -24,6 +24,8 @@
 		919E2E7817EA5CF300C4D097 /* ContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 919E2E7717EA5CF300C4D097 /* ContainerViewController.xib */; };
 		919E2E7A17EA5DA900C4D097 /* ContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 919E2E7917EA5DA900C4D097 /* ContentViewController.xib */; };
 		91A2C8BE17FA228700BAF946 /* UIColor+Random.m in Sources */ = {isa = PBXBuildFile; fileRef = 91A2C8BD17FA228700BAF946 /* UIColor+Random.m */; };
+		91A2C8C117FA23FF00BAF946 /* ExtrasView.m in Sources */ = {isa = PBXBuildFile; fileRef = 91A2C8C017FA23FF00BAF946 /* ExtrasView.m */; };
+		91A2C8C317FA241100BAF946 /* ExtrasView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 91A2C8C217FA241100BAF946 /* ExtrasView.xib */; };
 		91B2836217ECEFBA00CE45A3 /* PanGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 91B2836117ECEFBA00CE45A3 /* PanGestureRecognizer.m */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +64,9 @@
 		919E2E7917EA5DA900C4D097 /* ContentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContentViewController.xib; sourceTree = "<group>"; };
 		91A2C8BC17FA228700BAF946 /* UIColor+Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Random.h"; sourceTree = "<group>"; };
 		91A2C8BD17FA228700BAF946 /* UIColor+Random.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Random.m"; sourceTree = "<group>"; };
+		91A2C8BF17FA23FF00BAF946 /* ExtrasView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtrasView.h; sourceTree = "<group>"; };
+		91A2C8C017FA23FF00BAF946 /* ExtrasView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtrasView.m; sourceTree = "<group>"; };
+		91A2C8C217FA241100BAF946 /* ExtrasView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ExtrasView.xib; sourceTree = "<group>"; };
 		91B2836017ECEFBA00CE45A3 /* PanGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanGestureRecognizer.h; sourceTree = "<group>"; };
 		91B2836117ECEFBA00CE45A3 /* PanGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanGestureRecognizer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -135,6 +140,9 @@
 				91B2836117ECEFBA00CE45A3 /* PanGestureRecognizer.m */,
 				91A2C8BC17FA228700BAF946 /* UIColor+Random.h */,
 				91A2C8BD17FA228700BAF946 /* UIColor+Random.m */,
+				91A2C8BF17FA23FF00BAF946 /* ExtrasView.h */,
+				91A2C8C017FA23FF00BAF946 /* ExtrasView.m */,
+				91A2C8C217FA241100BAF946 /* ExtrasView.xib */,
 				915D9B7A17E88E93009B231B /* Images.xcassets */,
 				915D9B6F17E88E93009B231B /* Supporting Files */,
 			);
@@ -247,6 +255,7 @@
 			files = (
 				919E2E7A17EA5DA900C4D097 /* ContentViewController.xib in Resources */,
 				915D9B7317E88E93009B231B /* InfoPlist.strings in Resources */,
+				91A2C8C317FA241100BAF946 /* ExtrasView.xib in Resources */,
 				919E2E7817EA5CF300C4D097 /* ContainerViewController.xib in Resources */,
 				915D9B7B17E88E93009B231B /* Images.xcassets in Resources */,
 			);
@@ -273,6 +282,7 @@
 				915D9B7517E88E93009B231B /* main.m in Sources */,
 				915D9B9917E88ED3009B231B /* ContainerViewController.m in Sources */,
 				91B2836217ECEFBA00CE45A3 /* PanGestureRecognizer.m in Sources */,
+				91A2C8C117FA23FF00BAF946 /* ExtrasView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
