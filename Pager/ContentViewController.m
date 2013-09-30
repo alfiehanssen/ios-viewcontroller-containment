@@ -30,15 +30,6 @@
     return [NSString stringWithFormat:@"%d", self.index];
 }
 
-//- (id)initWithContent:(NSString *)content
-//{
-//    self = [super init];
-//    if (self) {
-//        self.content = content;
-//    }
-//    return self;
-//}
-
 #pragma mark - View Lifecycle
 
 - (void)didReceiveMemoryWarning

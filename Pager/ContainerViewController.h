@@ -23,6 +23,7 @@
 
 @protocol ContainerViewControllerDelegate <NSObject>
 
+// TODO: call these delegate methods
 @required
 - (void)containerViewController:(ContainerViewController *)container willTransitionFromViewController:(ContentViewController *)fromVC toViewController:(ContentViewController *)toVC;
 - (void)containerViewController:(ContainerViewController *)container didTransitionFromViewController:(ContentViewController *)fromVC toViewController:(ContentViewController *)toVC;
