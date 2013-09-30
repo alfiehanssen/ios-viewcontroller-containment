@@ -25,6 +25,11 @@
     return self;
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%d", self.index];
+}
+
 //- (id)initWithContent:(NSString *)content
 //{
 //    self = [super init];

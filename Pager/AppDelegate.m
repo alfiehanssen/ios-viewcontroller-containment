@@ -8,6 +8,11 @@
 
 #import "AppDelegate.h"
 #import "ContainerViewController.h"
+#import "ContentViewController.h"
+
+@interface AppDelegate () <ContainerViewControllerDatasource, ContainerViewControllerDelegate>
+@property (nonatomic, strong) NSMutableArray * contentArray;
+@end
 
 @implementation AppDelegate
 
@@ -15,9 +20,19 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
+    self.contentArray = [NSMutableArray arrayWithCapacity:5];
+    [self.contentArray addObject:@"0000000"];
+    [self.contentArray addObject:@"1111111"];
+    [self.contentArray addObject:@"2222222"];
+    [self.contentArray addObject:@"3333333"];
+    [self.contentArray addObject:@"4444444"];
+
     ContainerViewController * vc = [[ContainerViewController alloc] initWithNibName:@"ContainerViewController" bundle:nil];
-    vc.loopingEnabled = YES;
+    vc.datasource = self;
+    vc.delegate = self;
     vc.parallaxEnabled = YES;
+    [vc setInitialViewController:[self viewControllerForIndex:0]];
+    
     vc.view.frame = self.window.bounds;
     [self.window setRootViewController:vc];
     
@@ -26,31 +41,72 @@
     return YES;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
+#pragma mark - ContainerViewController Datasource
+
+- (ContentViewController *)containerViewController:(ContainerViewController *)container viewControllerForIndex:(int)index
 {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    ContentViewController * new = [self viewControllerForIndex:index];
+    return new;
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
+- (UIViewController *)containerViewController:(ContainerViewController *)container viewControllerBeforeViewController:(UIViewController *)vc
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    ContentViewController * new = nil;
+    int currentIndex = ((ContentViewController *)vc).index;
+    int index = [self indexBeforeIndex:currentIndex];
+    if (index != currentIndex) {
+        new = [self viewControllerForIndex:index];
+    }
+    return new;
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
+- (UIViewController *)containerViewController:(ContainerViewController *)container viewControllerAfterViewController:(UIViewController *)vc
 {
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    ContentViewController * new = nil;
+    int currentIndex = ((ContentViewController *)vc).index;
+    int index = [self indexAfterIndex:currentIndex];
+    if (index != currentIndex) {
+        new = [self viewControllerForIndex:index];
+    }
+    return new;
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application
+- (ContentViewController *)viewControllerForIndex:(int)index
 {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    ContentViewController * vc = nil;
+    
+    if (index >= 0 && index < [self.contentArray count]) {
+        NSString * content = [self.contentArray objectAtIndex:index];
+        vc = [[ContentViewController alloc] initWithNibName:@"ContentViewController" bundle:nil];
+        vc.index = index;
+        vc.content = content;
+    }
+    
+    return vc;
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application
+- (int)indexAfterIndex:(int)oldIndex
 {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    int index = (int)MIN(oldIndex + 1, [self.contentArray count] - 1);
+    return index;
+}
+
+- (int)indexBeforeIndex:(int)oldIndex
+{
+    int index = MAX(0, oldIndex - 1);
+    return index;
+}
+
+#pragma mark - ContainerViewController Delegate
+
+- (void)containerViewController:(ContainerViewController *)container willTransitionFromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC
+{
+    NSLog(@"will transition");
+}
+
+- (void)containerViewController:(ContainerViewController *)container didTransitionFromViewController:(UIViewController *)fromVC toViewController:(UIViewController *)toVC
+{
+    NSLog(@"did transition");
 }
 
 @end
