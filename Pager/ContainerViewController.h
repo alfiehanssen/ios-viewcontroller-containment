@@ -7,39 +7,26 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ContentViewController.h"
 
 @class ContainerViewController;
 
 @protocol ContainerViewControllerDatasource <NSObject>
 
 @required
-- (ContentViewController *)containerViewController:(ContainerViewController *)container viewControllerBeforeViewController:(ContentViewController *)vc;
-- (ContentViewController *)containerViewController:(ContainerViewController *)container viewControllerAfterViewController:(ContentViewController *)vc;
-- (ContentViewController *)containerViewController:(ContainerViewController *)container viewControllerForIndex:(int)index;
+- (UIViewController *)containerViewController:(UIViewController *)container viewControllerBeforeViewController:(UIViewController *)vc;
+- (UIViewController *)containerViewController:(UIViewController *)container viewControllerAfterViewController:(UIViewController *)vc;
 
 @end
 
+@interface ContainerViewController : UIViewController
 
-@protocol ContainerViewControllerDelegate <NSObject>
+@property (nonatomic, assign) BOOL parallaxEnabled;
+@property (nonatomic, assign) BOOL wrappingEnabled;
 
-// TODO: call these delegate methods
-@required
-- (void)containerViewController:(ContainerViewController *)container willTransitionFromViewController:(ContentViewController *)fromVC toViewController:(ContentViewController *)toVC;
-- (void)containerViewController:(ContainerViewController *)container didTransitionFromViewController:(ContentViewController *)fromVC toViewController:(ContentViewController *)toVC;
-
-@end
-
-
-@interface ContainerViewController : UIViewController <UIGestureRecognizerDelegate>
-
+@property (nonatomic, strong, readonly) UIViewController *currentViewController;
 @property (nonatomic, weak) id<ContainerViewControllerDatasource> datasource;
-@property (nonatomic, weak) id<ContainerViewControllerDelegate> delegate;
 
-@property (nonatomic, assign) BOOL parallaxEnabled; // YES = default
-
-@property (nonatomic, strong) ContentViewController * currentViewController;
-
-- (void)setInitialViewController:(ContentViewController *)vc;
+- (void)setInitialViewController:(UIViewController *)vc;
+- (void)setViewControllers:(NSArray *)viewControllers;
 
 @end

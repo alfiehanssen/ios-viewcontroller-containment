@@ -22,7 +22,6 @@
 		915D9B9917E88ED3009B231B /* ContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 915D9B9817E88ED3009B231B /* ContainerViewController.m */; };
 		915D9B9C17E88EE1009B231B /* ContentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 915D9B9B17E88EE1009B231B /* ContentViewController.m */; };
 		919E2E7817EA5CF300C4D097 /* ContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 919E2E7717EA5CF300C4D097 /* ContainerViewController.xib */; };
-		919E2E7A17EA5DA900C4D097 /* ContentViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 919E2E7917EA5DA900C4D097 /* ContentViewController.xib */; };
 		91B2836217ECEFBA00CE45A3 /* PanGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 91B2836117ECEFBA00CE45A3 /* PanGestureRecognizer.m */; };
 /* End PBXBuildFile section */
 
@@ -58,7 +57,6 @@
 		915D9B9A17E88EE1009B231B /* ContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentViewController.h; sourceTree = "<group>"; };
 		915D9B9B17E88EE1009B231B /* ContentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentViewController.m; sourceTree = "<group>"; };
 		919E2E7717EA5CF300C4D097 /* ContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContainerViewController.xib; sourceTree = "<group>"; };
-		919E2E7917EA5DA900C4D097 /* ContentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContentViewController.xib; sourceTree = "<group>"; };
 		91B2836017ECEFBA00CE45A3 /* PanGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanGestureRecognizer.h; sourceTree = "<group>"; };
 		91B2836117ECEFBA00CE45A3 /* PanGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanGestureRecognizer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -127,7 +125,6 @@
 				919E2E7717EA5CF300C4D097 /* ContainerViewController.xib */,
 				915D9B9A17E88EE1009B231B /* ContentViewController.h */,
 				915D9B9B17E88EE1009B231B /* ContentViewController.m */,
-				919E2E7917EA5DA900C4D097 /* ContentViewController.xib */,
 				91B2836017ECEFBA00CE45A3 /* PanGestureRecognizer.h */,
 				91B2836117ECEFBA00CE45A3 /* PanGestureRecognizer.m */,
 				915D9B7A17E88E93009B231B /* Images.xcassets */,
@@ -240,7 +237,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				919E2E7A17EA5DA900C4D097 /* ContentViewController.xib in Resources */,
 				915D9B7317E88E93009B231B /* InfoPlist.strings in Resources */,
 				919E2E7817EA5CF300C4D097 /* ContainerViewController.xib in Resources */,
 				915D9B7B17E88E93009B231B /* Images.xcassets in Resources */,
