@@ -20,15 +20,15 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
-    ContainerViewController *containerViewController = [[ContainerViewController alloc] init];
+    ContainerViewController *containerViewController = [ContainerViewController new];
     containerViewController.view.frame = self.window.bounds;
     
     // Setup #1
-    [containerViewController setViewControllers:[self viewControllersArray]];
+//    [containerViewController setViewControllers:[self viewControllersArray]];
 
     // Setup #2
-//    containerViewController.datasource = self;
-//    [containerViewController setInitialViewController:[ContentViewController new]];
+    containerViewController.datasource = self;
+    [containerViewController setInitialViewController:[ContentViewController new]];
     
     [self.window setRootViewController:containerViewController];
     [self.window makeKeyAndVisible];
