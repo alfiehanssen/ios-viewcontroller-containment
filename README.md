@@ -5,15 +5,14 @@ A simple `UIViewController containment` implementation of something akin to the 
 
 - interactive gesture-based paging in both directions
 - ability to enable/disable wrapping (moving from page 0 to lastIndex and back)
-- ability to enable/disable parallax paging
--
+- ability to enable/disable parallax paging  
 
 
 Usage
 
     ContainerViewController *containerViewController = [[ContainerViewController alloc] init];
     containerViewController.view.frame = self.window.bounds;
-    [containerViewController setViewControllers:[self viewControllersArray]];
+    [containerViewController setViewControllers:@[...];
     [self.window setRootViewController:containerViewController];
 
 Or
@@ -40,4 +39,8 @@ Or
         return new;
     }
 
+Configuration
 
+    self.parallaxEnabled = YES;
+    self.wrappingEnabled = YES;
+    
