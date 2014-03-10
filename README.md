@@ -7,22 +7,38 @@ A simple `UIViewController` containment implementation of something akin to the 
 - ability to enable/disable wrapping (moving from page 0 to lastIndex and back)
 - ability to enable/disable parallax paging  
 
-
 Usage #1
 
-    ContainerViewController *containerViewController = [[ContainerViewController alloc] init];
-    containerViewController.view.frame = self.window.bounds;
-    [containerViewController setViewControllers:@[...];
-    [self.window setRootViewController:containerViewController];
-
+    - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+    {
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        
+        ContainerViewController *containerViewController = [ContainerViewController new];
+        containerViewController.view.frame = self.window.bounds;
+        [containerViewController setViewControllers:@[...];
+        [self.window setRootViewController:containerViewController];
+        
+        [self.window makeKeyAndVisible];
+    
+        return YES;
+    }
 Usage #2
 
-    ContainerViewController *containerViewController = [[ContainerViewController alloc] init];
-    containerViewController.view.frame = self.window.bounds;
-    containerViewController.datasource = self;
-    [containerViewController setInitialViewController:[UIViewController new]];
-    [self.window setRootViewController:containerViewController];
-
+    - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+    {
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        
+        ContainerViewController *containerViewController = [ContainerViewController new];
+        containerViewController.view.frame = self.window.bounds;
+        containerViewController.datasource = self;
+        [containerViewController setInitialViewController:[UIViewController new]];
+        [self.window setRootViewController:containerViewController];
+        
+        [self.window makeKeyAndVisible];
+    
+        return YES;
+    }
+    
     #pragma mark - ContainerViewController Datasource
 
     - (UIViewController *)containerViewController:(ContainerViewController *)container viewControllerBeforeViewController:(UIViewController *)vc
