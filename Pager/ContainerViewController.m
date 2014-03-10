@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
     ContainerViewControllerModeDynamic
 };
 
-@interface ContainerViewController () <UIGestureRecognizerDelegate>
+@interface ContainerViewController ()
 
 @property (nonatomic, strong) NSMutableArray *viewControllers;
 @property (nonatomic, strong) UIViewController *currentViewController;
@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
     {
         _mode = ContainerViewControllerModeNone;
         _parallaxEnabled = YES;
-        _wrappingEnabled = YES;
+        _wrappingEnabled = NO;
         _viewControllers = [NSMutableArray array];
     }
     
@@ -57,7 +57,6 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
     [super viewDidLoad];
     
     PanGestureRecognizer * pan = [[PanGestureRecognizer alloc] initWithTarget:self action:@selector(pan:)];
-    pan.delegate = self;
     pan.maximumNumberOfTouches = 1;
     pan.minimumNumberOfTouches = 1;
     [self.view addGestureRecognizer:pan];
@@ -68,9 +67,9 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
 
 #pragma mark - Setup
 
-- (void)setViewControllers:(NSArray *)viewControllers
+- (void)setViewControllers:(NSMutableArray *)viewControllers
 {
-    NSAssert(viewControllers != nil, @"Initial viewController must not be nil");
+    NSAssert(viewControllers != nil, @"viewControllers argument must be non nil");
     
     _viewControllers = [viewControllers mutableCopy];
     
@@ -84,36 +83,18 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
     self.currentViewController = viewController;
 }
 
-- (void)setInitialViewController:(UIViewController *)vc
+- (void)setInitialViewController:(UIViewController *)viewController
 {
-    NSAssert(vc != nil, @"Initial viewController must not be nil");
-
+    NSAssert(viewController != nil, @"viewController argument must be non nil");
+    
     self.mode = ContainerViewControllerModeDynamic;
-
-    vc.view.frame = self.view.bounds;
-    [self addChildViewController:vc];
-    [self.view addSubview:vc.view];
-    [vc didMoveToParentViewController:self];
-    self.currentViewController = vc;
+    
+    viewController.view.frame = self.view.bounds;
+    [self addChildViewController:viewController];
+    [self.view addSubview:viewController.view];
+    [viewController didMoveToParentViewController:self];
+    self.currentViewController = viewController;
     [self.viewControllers addObject:self.currentViewController];
-}
-
-#pragma mark - UIGestureRecognizer Delegate
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-    BOOL shouldBegin = YES;
-    
-    //    if ([gestureRecognizer isKindOfClass:[PanGestureRecognizer class]]) {
-    //        PanDirection direction = ((PanGestureRecognizer *)gestureRecognizer).panDirection;
-    //        if (direction == PanDirectionBack && self.currentViewController.index == 0) {
-    //            shouldBegin = NO;
-    //        } else if (direction == PanDirectionForward && self.currentViewController.index == [self.contentArray count] - 1) {
-    //            shouldBegin = NO;
-    //        }
-    //    }
-    
-    return shouldBegin;
 }
 
 #pragma mark - Tap Navigation
@@ -298,6 +279,14 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
     UIViewController *previous = nil;
 
     int index = [self.viewControllers indexOfObjectIdenticalTo:self.currentViewController] - 1;
+    if (self.mode == ContainerViewControllerModeStatic && self.wrappingEnabled)
+    {
+        if (index < 0)
+        {
+            index = [self.viewControllers count] - 1;
+        }
+    }
+    
     if (index >= 0 && index < [self.viewControllers count])
     {
         previous = [self.viewControllers objectAtIndex:index];
@@ -317,8 +306,6 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
         [self.viewControllers removeLastObject];
     }
 
-    NSLog(@"viewControllers: %@", self.viewControllers);
-
     return previous;
 }
 
@@ -327,6 +314,14 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
     UIViewController *next = nil;
 
     int index = [self.viewControllers indexOfObjectIdenticalTo:self.currentViewController] + 1;
+    if (self.mode == ContainerViewControllerModeStatic && self.wrappingEnabled)
+    {
+        if (index >= [self.viewControllers count])
+        {
+            index = 0;
+        }
+    }
+
     if (index >= 0 && index < [self.viewControllers count])
     {
         next = [self.viewControllers objectAtIndex:index];
@@ -345,8 +340,6 @@ typedef NS_ENUM(NSInteger, ContainerViewControllerMode)
     {
         [self.viewControllers removeObjectAtIndex:0];
     }
-
-    NSLog(@"viewControllers: %@", self.viewControllers);
 
     return next;
 }

@@ -9,19 +9,17 @@
 #import "PanGestureRecognizer.h"
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
-@interface PanGestureRecognizer ()
-
-@end
-
 @implementation PanGestureRecognizer
 
 - (id)initWithTarget:(id)target action:(SEL)action
 {
     self = [super initWithTarget:target action:action];
-    if (self) {
-        self.panDirection = PanDirectionNone;
-        self.panDidChangeDirection = NO;
+    if (self)
+    {
+        _panDirection = PanDirectionNone;
+        _panDidChangeDirection = NO;
     }
+    
     return self;
 }
 
@@ -39,15 +37,22 @@
  
     CGPoint velocity = [self velocityInView:self.view];
 
-    if (self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateBegan) {
-        if (velocity.x > 0.0f) {
+    if (self.state == UIGestureRecognizerStatePossible || self.state == UIGestureRecognizerStateBegan)
+    {
+        if (velocity.x > 0.0f)
+        {
             self.panDirection = PanDirectionBack;
-        } else {
+        }
+        else
+        {
             self.panDirection = PanDirectionForward;
         }
-    } else {
+    }
+    else
+    {
         PanDirection currentDirection = (velocity.x > 0.0f) ? PanDirectionBack : PanDirectionForward;
-        if (self.panDirection != currentDirection) {
+        if (self.panDirection != currentDirection)
+        {
             self.panDidChangeDirection = YES;
         }
     }

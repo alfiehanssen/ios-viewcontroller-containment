@@ -36,20 +36,6 @@
     return YES;
 }
 
-- (NSArray *)viewControllersArray
-{
-    NSInteger count = 5;
-    NSMutableArray *viewControllers = [NSMutableArray array];
-    
-    for (NSInteger i = 0; i < count; i++)
-    {
-        ContentViewController * new = [ContentViewController new];
-        viewControllers[i] = new;
-    }
-    
-    return viewControllers;
-}
-
 #pragma mark - ContainerViewController Datasource
 
 - (UIViewController *)containerViewController:(ContainerViewController *)container viewControllerBeforeViewController:(UIViewController *)vc
@@ -64,6 +50,22 @@
     ContentViewController * new = [ContentViewController new];
     
     return new;
+}
+
+#pragma mark - Convenience
+
+- (NSMutableArray *)viewControllersArray
+{
+    NSInteger count = 5;
+    NSMutableArray *viewControllers = [NSMutableArray array];
+    
+    for (NSInteger i = 0; i < count; i++)
+    {
+        ContentViewController * new = [ContentViewController new];
+        viewControllers[i] = new;
+    }
+    
+    return viewControllers;
 }
 
 @end

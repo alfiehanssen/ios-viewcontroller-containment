@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class ContainerViewController;
-
 @protocol ContainerViewControllerDatasource <NSObject>
 
 @required
@@ -20,13 +18,14 @@
 
 @interface ContainerViewController : UIViewController
 
-@property (nonatomic, assign) BOOL parallaxEnabled;
-@property (nonatomic, assign) BOOL wrappingEnabled;
+@property (nonatomic, assign) BOOL parallaxEnabled; // default = ON
+@property (nonatomic, assign) BOOL wrappingEnabled; // default = OFF, Only applicable when initializing with setViewControllers:
 
-@property (nonatomic, strong, readonly) UIViewController *currentViewController;
 @property (nonatomic, weak) id<ContainerViewControllerDatasource> datasource;
 
+@property (nonatomic, strong, readonly) UIViewController *currentViewController;
+
 - (void)setInitialViewController:(UIViewController *)vc;
-- (void)setViewControllers:(NSArray *)viewControllers;
+- (void)setViewControllers:(NSMutableArray *)viewControllers;
 
 @end
