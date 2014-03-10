@@ -58,7 +58,6 @@ Configuration
     self.parallaxEnabled = YES;
     self.wrappingEnabled = YES;
     
-TODO
+TODO:
 
 - There's a lot of duplicate logic in the finish and cancelTransition code, this should be anstracted & condensed
-- 
