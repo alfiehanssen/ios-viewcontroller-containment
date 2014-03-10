@@ -28,14 +28,12 @@ Or
     - (UIViewController *)containerViewController:(ContainerViewController *)container viewControllerBeforeViewController:(UIViewController *)vc
     {
         UIViewController * new = [UIViewController new];
-        
         return new;
     }
     
     - (UIViewController *)containerViewController:(ContainerViewController *)container viewControllerAfterViewController:(UIViewController *)vc
     {
         UIViewController * new = [UIViewController new];
-    
         return new;
     }
 
